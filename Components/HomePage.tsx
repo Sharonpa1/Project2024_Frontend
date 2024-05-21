@@ -3,6 +3,7 @@ import { View, Text, Button, StyleSheet } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
 import { RootStackParamList } from '../App';
+import Post from './Post';
 
 type HomeScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Home'>;
 type HomeScreenRouteProp = RouteProp<RootStackParamList, 'Home'>;
@@ -13,14 +14,12 @@ type Props = {
 };
 
 export default function Home({ navigation, route }: Props) {
-  const { name } = route.params;
+  const { user } = route.params;
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Welcome, {name}!</Text>
-      <Button title="Button 1" onPress={() => {}} />
-      <Button title="Button 2" onPress={() => {}} />
-      <Button title="Button 3" onPress={() => {}} />
+      <Post/>
+      <Button title="Create New Post" onPress={() => navigation.navigate('Post')} color='#ff7d03'/>
     </View>
   );
 }
@@ -30,7 +29,8 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#fff',
+    backgroundColor: '#2b2b2b',
+    paddingBottom: 10
   },
   header: {
     fontSize: 24,

@@ -104,10 +104,10 @@ export default function Login({ navigation, setUserName, setUser}: Props) {
       {/* <Button title="Login" onPress={handleLogin} />
       <Button title="Cancel" onPress={handleCancel} /> */}
 
-      <Pressable style={styles.button} onPress={handleLogin}>
+      <Pressable style={styles.buttonLogin} onPress={handleLogin}>
         <Text style={styles.text}>Login</Text>
       </Pressable>
-      <Pressable style={styles.button} onPress={handleCancel}>
+      <Pressable style={styles.buttonCancel} onPress={handleCancel}>
         <Text style={styles.text}>Cancel</Text>
       </Pressable>
     </View>
@@ -135,7 +135,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     fontSize: 18,
   },
-  button: {
+  buttonLogin: {
     alignItems: 'center',
     justifyContent: 'center',
     // paddingVertical: 12,
@@ -143,6 +143,18 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     elevation: 3,
     backgroundColor: '#ff7d03',
+    marginTop: 20,
+    marginHorizontal: 40,
+    height: 40
+  },
+  buttonCancel: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    // paddingVertical: 12,
+    // paddingHorizontal: 32,
+    borderRadius: 20,
+    elevation: 3,
+    backgroundColor: '#545454',
     marginTop: 20,
     marginHorizontal: 40,
     height: 40

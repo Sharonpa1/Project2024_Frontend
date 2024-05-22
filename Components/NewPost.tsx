@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, Alert, StyleSheet } from 'react-native';
+import { View, Text, TextInput, Button, Alert, StyleSheet, Pressable } from 'react-native';
 import RNPickerSelect from 'react-native-picker-select';
 import { newPostRequest } from '../ServerCalls';
 import axios from 'axios';
@@ -66,8 +66,17 @@ const Post = ({ user, navigation }: any) => {
       />
 
       <View style={styles.buttonContainer}>
-        <Button title="Save" onPress={handleSave} />
-        <Button title="Cancel" onPress={handleCancel} color="red" />
+        {/* <Button title="Save" onPress={handleSave} />
+        <Button title="Cancel" onPress={handleCancel} color="red" /> */}
+
+
+      <Pressable style={styles.buttonCancel} onPress={handleCancel}>
+        <Text style={styles.text}>Cancel</Text>
+      </Pressable>
+      <Pressable style={styles.buttonSave} onPress={handleSave}>
+        <Text style={styles.text}>Save</Text>
+      </Pressable>
+
       </View>
     </View>
   );
@@ -77,23 +86,60 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: '#fff',
+    backgroundColor: '#2b2b2b',
   },
   label: {
     fontSize: 18,
     marginVertical: 10,
+    fontWeight: 'bold',
+    color: 'white'
   },
   input: {
-    height: 100,
-    borderColor: 'gray',
+    height: 300,
+    borderColor: '#2b2b2b',
     borderWidth: 1,
     marginBottom: 20,
     paddingHorizontal: 10,
+    paddingVertical: 10,
+    fontSize: 16,
+    backgroundColor: '#545454',
+    color: 'white',
     textAlignVertical: 'top', // for Android to align text at the top of the TextInput
   },
   buttonContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+  },
+  buttonSave: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 5,
+    elevation: 3,
+    backgroundColor: '#ff7d03',
+    marginTop: 10,
+    // marginHorizontal: 40,
+    height: 40,
+    width: 100
+  },
+  buttonCancel: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    // paddingVertical: 12,
+    // paddingHorizontal: 32,
+    borderRadius: 5,
+    elevation: 3,
+    backgroundColor: '#545454',
+    marginTop: 10,
+    // marginHorizontal: 40,
+    height: 40,
+    width: 100
+  },
+  text: {
+    fontSize: 20,
+    lineHeight: 21,
+    fontWeight: 'bold',
+    letterSpacing: 0.25,
+    color: 'white',
   },
 });
 
@@ -111,12 +157,11 @@ const pickerSelectStyles = StyleSheet.create({
   },
   inputAndroid: {
     fontSize: 16,
+    fontWeight: 'bold',
+    backgroundColor: '#545454',
     paddingHorizontal: 10,
     paddingVertical: 8,
-    borderWidth: 1,
-    borderColor: 'gray',
-    borderRadius: 4,
-    color: 'black',
+    color: 'white',
     paddingRight: 30, // to ensure the text is never behind the icon
     marginBottom: 20,
   },

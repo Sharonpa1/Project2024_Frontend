@@ -18,7 +18,8 @@ const NewPost = ({ user, navigation }: any) => {
     try {
         const response = await newPostRequest(user, subject, content);
         Alert.alert('Success', 'Post saved successfully');
-        navigation.navigate('Home', { user: user });
+        // navigation.navigate('Home', { user: user });
+        navigation.goBack();
       } 
       catch (error) {
         if (axios.isAxiosError(error) && error.response) {
@@ -37,8 +38,8 @@ const NewPost = ({ user, navigation }: any) => {
   const handleCancel = () => {
     setSubject('');
     setContent('');
-    navigation.navigate('Home', { user: user });
-    // navigation.goBack();
+    // navigation.navigate('Home', { user: user });
+    navigation.goBack();
   };
 
   return (

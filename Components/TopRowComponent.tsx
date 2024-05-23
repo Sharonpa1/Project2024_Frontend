@@ -1,6 +1,5 @@
 import React from 'react';
 import { View, Text, Button, StyleSheet, TouchableOpacity, Image } from 'react-native';
-// import Profile from './Components/ProfilePage';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList, User } from '../App';
 
@@ -9,10 +8,15 @@ type TopRowNavigationProp = StackNavigationProp<RootStackParamList, 'TopRow'>;
 type Props = {
   navigation: TopRowNavigationProp;
   user: User;
-  onLogout: () => void;
+  setUser: (user: User) => void;
 };
 
-export default function TopRow({ navigation, user, onLogout }: Props) {
+export default function TopRow({ navigation, user, setUser }: Props) {
+
+  const handleLogout = () => {
+    setUser({name: '', email: '', password: ''});
+    navigation.navigate('Initial');
+  };
 
   return (
     <View style={styles.headerContainer}>
@@ -20,7 +24,7 @@ export default function TopRow({ navigation, user, onLogout }: Props) {
         <Image style={styles.avatar} source={require('../assets/avatar.jpeg')} />
         <Text style={styles.userName}>{user.name}</Text>
       </TouchableOpacity>
-      <Button title="Logout" onPress={onLogout} color='#ff7d03'/>
+      <Button title="Logout" onPress={handleLogout} color='#ff7d03'/>
     </View>
   );
 }

@@ -48,3 +48,30 @@ export const getAllPostsRequest = async () => {
     throw error;
   }
 };
+
+export const getPostsByUserIdRequest = async (id : any) => {
+  try {
+    const response = await axios.get(`${BASE_URL}/post/getPostsByUserId/${id}`);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const editPostRequest = async (id : any, owner : any, subject : any, content : any) => {
+  try {
+    const response = await axios.put(`${BASE_URL}/post/editPost`, { id, owner, subject, content });
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const deletePostRequest = async (id : any) => {
+  try {
+    const response = await axios.put(`${BASE_URL}/post/deletePost`, { id });
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};

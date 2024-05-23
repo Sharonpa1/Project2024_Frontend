@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, Alert, StyleSheet, Pressable } from 'react-native';
+import { View, Text, TextInput, Alert, StyleSheet, Pressable } from 'react-native';
 import RNPickerSelect from 'react-native-picker-select';
 import { newPostRequest } from '../ServerCalls';
 import axios from 'axios';
 
-const Post = ({ user, navigation }: any) => {
+const NewPost = ({ user, navigation }: any) => {
   const [subject, setSubject] = useState('');
   const [content, setContent] = useState('');
 
@@ -31,7 +31,6 @@ const Post = ({ user, navigation }: any) => {
         } else {
           Alert.alert('Error', 'An error occurred during creating new post');
         }
-        // console.error(error);
       }
   };
 
@@ -66,17 +65,12 @@ const Post = ({ user, navigation }: any) => {
       />
 
       <View style={styles.buttonContainer}>
-        {/* <Button title="Save" onPress={handleSave} />
-        <Button title="Cancel" onPress={handleCancel} color="red" /> */}
-
-
-      <Pressable style={styles.buttonCancel} onPress={handleCancel}>
-        <Text style={styles.text}>Cancel</Text>
-      </Pressable>
-      <Pressable style={styles.buttonSave} onPress={handleSave}>
-        <Text style={styles.text}>Save</Text>
-      </Pressable>
-
+        <Pressable style={styles.buttonCancel} onPress={handleCancel}>
+          <Text style={styles.text}>Cancel</Text>
+        </Pressable>
+        <Pressable style={styles.buttonSave} onPress={handleSave}>
+          <Text style={styles.text}>Save</Text>
+        </Pressable>
       </View>
     </View>
   );
@@ -104,7 +98,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     backgroundColor: '#545454',
     color: 'white',
-    textAlignVertical: 'top', // for Android to align text at the top of the TextInput
+    textAlignVertical: 'top',
   },
   buttonContainer: {
     flexDirection: 'row',
@@ -152,7 +146,7 @@ const pickerSelectStyles = StyleSheet.create({
     borderColor: 'gray',
     borderRadius: 4,
     color: 'black',
-    paddingRight: 30, // to ensure the text is never behind the icon
+    paddingRight: 30,
     marginBottom: 20,
   },
   inputAndroid: {
@@ -162,9 +156,9 @@ const pickerSelectStyles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 8,
     color: 'white',
-    paddingRight: 30, // to ensure the text is never behind the icon
+    paddingRight: 30,
     marginBottom: 20,
   },
 });
 
-export default Post;
+export default NewPost;

@@ -6,7 +6,15 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList, User } from '../App';
 import { deletePostRequest, editPostRequest, editUserNameRequest, editUserPasswordRequest, getPostsByUserIdRequest } from '../ServerCalls';
 import RNPickerSelect from 'react-native-picker-select';
+import { TabRouter, useFocusEffect } from '@react-navigation/native';
+import Icon from 'react-native-vector-icons/Ionicons'; // or any other icon library
+import { LogBox } from 'react-native';
 
+// Ignore all log notifications
+LogBox.ignoreAllLogs(true);
+// LogBox.ignoreLogs([
+//   'Warning: ...', 
+// ]);
 
 type ProfileNavigationProp = StackNavigationProp<RootStackParamList, 'Profile'>;
 
@@ -45,10 +53,7 @@ const Profile = ({ user, navigation, setUser }: Props) => {
 
   const [refreshKey, setRefreshKey] = useState(0); // Add refresh key state
 
- useEffect(() => {
-    // You can add logic here to fetch fresh user details if needed
-  }, [refreshKey]); // Depend on refreshKey to trigger refresh
-  
+ 
   const fetchPosts = async () => {
     try {
           const response = await getPostsByUserIdRequest(user.email);
@@ -62,14 +67,19 @@ const Profile = ({ user, navigation, setUser }: Props) => {
     }
   };
 
+  useFocusEffect(
+    React.useCallback(() => {
+      fetchPosts();
+    }, [])
+  );
+  
   useEffect(() => {
     fetchPosts();
   }, []);
 
 
   useEffect(() => {
-    // You can add logic here to fetch fresh user details if needed
-  }, [refreshKey]); // Depend on refreshKey to trigger refresh
+  }, [refreshKey]);
 
   const handleEditNameSave = async () => {
     if (!newName) {
@@ -83,7 +93,7 @@ const Profile = ({ user, navigation, setUser }: Props) => {
       setEditNameMode(false);
       setNewName('');
       setUser(response);
-      setRefreshKey(oldKey => oldKey + 1); // Trigger refresh
+      setRefreshKey(oldKey => oldKey + 1);
 
     } 
     catch (error) {
@@ -135,8 +145,6 @@ const Profile = ({ user, navigation, setUser }: Props) => {
   const handleEditDetailsCancel = () => {
     setEditNameMode(false);
     setEditPasswordMode(false);
-    // setEditDetailsMode(false);
-    // navigation.navigate('Profile');
   };
 
   const renderItem = ({ item }: { item: Post }) => (
@@ -219,7 +227,7 @@ const Profile = ({ user, navigation, setUser }: Props) => {
 
   const handleSaveEdit = async (post : any) =>{
     try { 
-      const response = await editPostRequest(post._id, post.owner, newSubject, newContent);
+      const response = await editPostRequest(post._id, newSubject, newContent);
       fetchPosts();
       handleCancelEdit(post);
     } 
@@ -243,7 +251,42 @@ const Profile = ({ user, navigation, setUser }: Props) => {
 
 
   return (
-    <Tab.Navigator>
+    <Tab.Navigator  screenOptions={{
+      headerStyle: {
+        backgroundColor: '#2b2b2b',
+      },
+      headerTintColor: '#fff',
+      headerTitleStyle: {
+        fontWeight: 'bold',
+      },
+      tabBarActiveTintColor: '#ff7d03',
+      tabBarInactiveTintColor: 'gray',
+      tabBarStyle: {
+        backgroundColor: 'black',
+        paddingBottom: 5,
+      },
+      tabBarLabelStyle: {
+        fontSize: 18,
+        fontWeight: 'bold'
+      },
+      tabBarIcon: () => null
+      // tabBarIcon: ({ focused, color, size }) => {
+      //   let iconName;
+
+      //   if (TabRouter.name === 'Home') {
+      //     iconName = focused
+      //       ? 'ios-home'
+      //       : 'ios-home-outline';
+      //   } else if (TabRouter.name === 'Profile') {
+      //     iconName = focused
+      //       ? 'ios-person'
+      //       : 'ios-person-outline';
+      //   }
+      
+      //   // You can return any component that you like here!
+      //   return <Icon name={iconName} size={size} color={color} />;}
+      // Additional options
+    }}>
       <Tab.Screen name="Personal Details">
         {/* {props => <UserDetails {...props} userName={userName} />} */}
         {props => 

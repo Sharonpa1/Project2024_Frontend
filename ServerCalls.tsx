@@ -77,9 +77,9 @@ export const getPostsByUserIdRequest = async (id : any) => {
   }
 };
 
-export const editPostRequest = async (id : any, owner : any, subject : any, content : any) => {
+export const editPostRequest = async (id : any, subject : any, content : any) => {
   try {
-    const response = await axios.put(`${BASE_URL}/post/editPost`, { id, owner, subject, content });
+    const response = await axios.put(`${BASE_URL}/post/editPost`, { id, subject, content });
     return response.data;
   } catch (error) {
     throw error;

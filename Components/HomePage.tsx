@@ -7,6 +7,14 @@ import { View, Text, FlatList, StyleSheet, ActivityIndicator, Alert, Button, Pre
 import { editPostRequest, getAllPostsRequest, deletePostRequest, getPostsByUserIdRequest } from '../ServerCalls';
 import axios from 'axios';
 import RNPickerSelect from 'react-native-picker-select';
+import { LogBox } from 'react-native';
+
+// Ignore all log notifications
+LogBox.ignoreAllLogs(true);
+// LogBox.ignoreLogs([
+//   'Warning: ...', 
+// ]);
+
 
 type HomeScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Home'>;
 type HomeScreenRouteProp = RouteProp<RootStackParamList, 'Home'>;
@@ -153,7 +161,7 @@ export default function Home({ navigation, route }: Props) {
 
   const handleSaveEdit = async (post : any) =>{
     try { 
-      const response = await editPostRequest(post._id, post.owner, newSubject, newContent);
+      const response = await editPostRequest(post._id, newSubject, newContent);
       fetchPosts();
       handleCancelEdit(post);
     } 

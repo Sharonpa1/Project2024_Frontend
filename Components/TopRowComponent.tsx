@@ -14,7 +14,10 @@ type Props = {
 export default function TopRow({ navigation, user, setUser }: Props) {
 
   const handleLogout = () => {
-    setUser({name: '', email: '', password: ''});
+    setUser({
+      name: '', email: '', password: '',
+      _id: ''
+    });
     navigation.navigate('Initial');
   };
 
@@ -24,7 +27,13 @@ export default function TopRow({ navigation, user, setUser }: Props) {
         <Image style={styles.avatar} source={require('../assets/avatar.jpeg')} />
         <Text style={styles.userName}>{user.name}</Text>
       </TouchableOpacity>
-      <Button title="Logout" onPress={handleLogout} color='#ff7d03'/>
+      <TouchableOpacity style={styles.homeBtn} onPress={() => navigation.navigate('Home', { user: user })}>
+        <Image style={styles.btnIcon} source={require('../assets/home.png')} />
+      </TouchableOpacity>
+      <TouchableOpacity onPress={handleLogout}>
+        <Image style={styles.btnIcon} source={require('../assets/logout.png')} />
+      </TouchableOpacity>
+      {/* <Button title="Logout" onPress={handleLogout} color='#ff7d03'/> */}
     </View>
   );
 }
@@ -53,6 +62,15 @@ const styles = StyleSheet.create({
     height: 30,
     width: 30,
     marginRight: 10
+  }, 
+  btnIcon: {
+    alignSelf: 'center',
+    height: 30,
+    width: 30,
+    marginRight: 10
+  },
+  homeBtn: {
+    marginLeft: 150
   },
   button: {
 

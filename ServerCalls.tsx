@@ -27,6 +27,25 @@ export const loginRequest = async (email: any, password: any) => {
   }
 };
 
+
+export const editUserNameRequest = async (id : any, name : any) => {
+  try {
+    const response = await axios.put(`${BASE_URL}/auth/editName`, { id, name });
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const editUserPasswordRequest = async (id : any, password : any) => {
+  try {
+    const response = await axios.put(`${BASE_URL}/auth/editPassword`, { id, password });
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
 export const newPostRequest = async (user: any, subject: any, content: any) => {
   try {
     const response = await axios.post(`${BASE_URL}/post/newPost`, {

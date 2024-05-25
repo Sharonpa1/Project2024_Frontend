@@ -20,6 +20,7 @@ export type RootStackParamList = {
 };
 
 export type User = {
+  _id: string,
   name: string,
   email: string,
   password: string
@@ -44,6 +45,7 @@ function InitialScreen({ navigation } : any) {
 export default function App() {
   const [userName, setUserName] = useState('');
   const [_user, setUser] = useState<User>({
+    _id: '',
     name: '',
     email: '',
     password: '',
@@ -75,7 +77,7 @@ export default function App() {
           {props => (
             <>
               <TopRow {...props} user={_user} setUser={setUser}/>
-              <Profile {...props} user={_user}/>
+              <Profile {...props} user={_user} setUser={setUser}/>
             </>
           )}
         </Stack.Screen>

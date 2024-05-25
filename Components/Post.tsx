@@ -1,129 +1,24 @@
-// import React, { useState, useEffect } from 'react';
-// import { View, Text, FlatList, StyleSheet, ActivityIndicator, Alert } from 'react-native';
-// import axios from 'axios';
-// import { getAllPostsRequest } from '../ServerCalls';
-
-// export type Post = {
-//     user: string;
-//     subject: string;
-//     content: string;
-//   };
-
-// const PostsList = () => {
-//   const [posts, setPosts] = useState<Post[]>([]);
-//   const [loading, setLoading] = useState(true);
-//   const [error, setError] = useState<string | null>(null);
-
-//   useEffect(() => {
-//     const fetchPosts = async () => {
-//       try {
-//         const response = await getAllPostsRequest();
-//         console.log(`${response[0]}`);
-//         setPosts(response.data);
-//       } catch (error) {
-//         setError('Error fetching posts');
-//         console.error('Error fetching posts', error);
-//       } finally {
-//         setLoading(false);
-//       }
-//     };
-
-//     fetchPosts();
-//   }, []);
-
-//   if (loading) {
-//     return (
-//       <View style={styles.center}>
-//         <ActivityIndicator size="large" color="#0000ff" />
-//       </View>
-//     );
-//   }
-
-//   if (error) {
-//     return (
-//       <View style={styles.center}>
-//         <Text style={styles.error}>{error}</Text>
-//       </View>
-//     );
-//   }
-
-//   const renderItem = ({ item }: { item: Post }) => (
-//     <View style={styles.postItem}>
-//       <Text style={styles.subject}>{item.subject}</Text>
-//       <Text style={styles.content}>{item.content}</Text>
-//     </View>
-//   );
-
-//   return (
-//     <View style={styles.container}>
-//       <FlatList
-//         data={posts}
-//         keyExtractor={(item) => item.user}
-//         renderItem={renderItem}
-//         contentContainerStyle={styles.list}
-//       />
-//     </View>
-//   );
-// };
-
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//     backgroundColor: '#fff',
-//     padding: 10,
-//   },
-//   list: {
-//     paddingBottom: 20,
-//   },
-//   postItem: {
-//     backgroundColor: '#f9f9f9',
-//     padding: 15,
-//     marginVertical: 8,
-//     borderRadius: 8,
-//   },
-//   subject: {
-//     fontSize: 18,
-//     fontWeight: 'bold',
-//   },
-//   content: {
-//     fontSize: 14,
-//     marginTop: 5,
-//   },
-//   center: {
-//     flex: 1,
-//     justifyContent: 'center',
-//     alignItems: 'center',
-//   },
-//   error: {
-//     fontSize: 18,
-//     color: 'red',
-//   },
-// });
-
-// export default PostsList;
-
-
 import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, StyleSheet, ActivityIndicator, Alert } from 'react-native';
-import { getAllPostsRequest } from '../ServerCalls';
+import { View, Text, FlatList, StyleSheet, ActivityIndicator, Alert, Button, Pressable, RefreshControl } from 'react-native';
+import { editPostRequest, getAllPostsRequest } from '../ServerCalls';
+import axios from 'axios';
 
 export type Post = {
+    _id: string;
     title: string;
     content: string;
     owner: string;
   };
 
+
 const PostsList = () => {
   const [posts, setPosts] = useState<Post[]>([]);
-//   const [posts, setPosts] = useState<Post>({user: '', subject: '', content: ''});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
     const fetchPosts = async () => {
       try {
         const response = await getAllPostsRequest();
-        // console.log(`${response[0].owner.toString()}`);
         setPosts(response);
 
       } catch (error) {
@@ -134,7 +29,8 @@ const PostsList = () => {
       }
     };
 
-    fetchPosts();
+    useEffect(() => {
+      fetchPosts();
   }, []);
 
   if (loading) {
@@ -158,8 +54,37 @@ const PostsList = () => {
       <Text style={styles.subject}>{item.title}</Text>
       <Text style={styles.user}>{item.owner}</Text>
       <Text style={styles.content}>{item.content}</Text>
+      <Pressable style={styles.button} onPress={() => handleSaveEdit(item)}>
+        <Text style={styles.text}>Save</Text>
+      </Pressable>
     </View>
   );
+
+  const handleSaveEdit = async (post : any) =>{
+    try {
+      // const response = await editPostRequest(post._id, post.subject, post.content);
+      // Alert.alert('Success', `${post.owner}`);      
+      const response = await editPostRequest(post._id, post.owner, 'cars', 'Sharon123456789');
+      Alert.alert('Success', `${response}`);    
+      fetchPosts();
+    } 
+    catch (error) {
+      if (axios.isAxiosError(error) && error.response) {
+          if (error.response.status === 400) {
+              Alert.alert('Error', `Missing subject or content`);
+          }
+          else if (error.response.status === 404) {
+            Alert.alert('Error', `Post not found`);
+        }
+          else {
+              Alert.alert('Error', `Request failed with status code ${error.response.status}`);
+          }
+      } else {
+        Alert.alert('Error', 'An error occurred during edit post');
+      }
+    }
+
+  };
 
   return (
     <View style={styles.container}>
@@ -223,6 +148,26 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: 'red',
   },
+  button: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    // paddingVertical: 12,
+    // paddingHorizontal: 32,
+    borderRadius: 20,
+    elevation: 3,
+    backgroundColor: '#ff7d03',
+    marginTop: 2,
+    marginLeft: 270,
+    height: 20,
+    width: 40,
+  },
+  text: {
+    fontSize: 14,
+    lineHeight: 21,
+    fontWeight: 'bold',
+    letterSpacing: 0.25,
+    color: 'white',
+  }
 });
 
 export default PostsList;

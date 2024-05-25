@@ -4,7 +4,7 @@ import { View, Text, TextInput, Button, StyleSheet, Alert, Image, Pressable, Fla
 import axios from 'axios';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList, User } from '../App';
-import { deletePostRequest, editPostRequest, getPostsByUserIdRequest } from '../ServerCalls';
+import { deletePostRequest, editPostRequest, editUserNameRequest, editUserPasswordRequest, getPostsByUserIdRequest } from '../ServerCalls';
 import RNPickerSelect from 'react-native-picker-select';
 
 
@@ -13,6 +13,7 @@ type ProfileNavigationProp = StackNavigationProp<RootStackParamList, 'Profile'>;
 type Props = {
     navigation: ProfileNavigationProp;
     user: User;
+    setUser: (user: User) => void;
 };
 
 type Post = {
@@ -21,16 +22,20 @@ type Post = {
   content: string;
   owner: string;
   isEditMode : boolean;
-  setIsEditMode: (value: boolean) => void;
+  // setIsEditMode: (value: boolean) => void;
 };
 
 const Tab = createBottomTabNavigator();
 
-const Profile = ({ user, navigation }: Props) => {
+const Profile = ({ user, navigation, setUser }: Props) => {
   const [name, setName] = useState(user.name);
   const [email, setEmail] = useState(user.email);
   const [password, setPassword] = useState(user.password);
-  const [isEditMode, setEditMode] = useState(false);
+  // const [isEditDetailsMode, setEditDetailsMode] = useState(false);
+  const [isEditNameMode, setEditNameMode] = useState(false);
+  const [isEditPasswordMode, setEditPasswordMode] = useState(false);
+  const [newName, setNewName] = useState('');
+  const [newPassword, setNewPassword] = useState('');
 
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
@@ -38,6 +43,11 @@ const Profile = ({ user, navigation }: Props) => {
   const [newSubject, setNewSubject] = useState('');
   const [newContent, setNewContent] = useState('');
 
+  const [refreshKey, setRefreshKey] = useState(0); // Add refresh key state
+
+ useEffect(() => {
+    // You can add logic here to fetch fresh user details if needed
+  }, [refreshKey]); // Depend on refreshKey to trigger refresh
   
   const fetchPosts = async () => {
     try {
@@ -54,21 +64,79 @@ const Profile = ({ user, navigation }: Props) => {
 
   useEffect(() => {
     fetchPosts();
-}, []);
+  }, []);
 
 
-  const handleEditDetailsSave = async () => {
-    try {
-      const response = await axios.put('http://<your-server-ip>:<port>/api/user', { name, password });
-      Alert.alert('Success', 'User details updated successfully');
-    } catch (error) {
-      Alert.alert('Error', 'Failed to update user details');
-      console.error(error);
+  useEffect(() => {
+    // You can add logic here to fetch fresh user details if needed
+  }, [refreshKey]); // Depend on refreshKey to trigger refresh
+
+  const handleEditNameSave = async () => {
+    if (!newName) {
+      Alert.alert('Error', 'Please fill all the fields');
+      return;
+    }
+    try { 
+      const response = await editUserNameRequest(user._id, newName);
+      Alert.alert('Success', 'User name updated successfully');
+      setName(newName);
+      setEditNameMode(false);
+      setNewName('');
+      setUser(response);
+      setRefreshKey(oldKey => oldKey + 1); // Trigger refresh
+
+    } 
+    catch (error) {
+      if (axios.isAxiosError(error) && error.response) {
+          if (error.response.status === 400) {
+              Alert.alert('Error', `Missing name`);
+          }
+          else if (error.response.status === 401) {
+            Alert.alert('Error', `Invalid name`);
+        }
+          else {
+              Alert.alert('Error', `Request failed with status code ${error.response.status}`);
+          }
+      } else {
+        Alert.alert('Error', 'An error occurred during edit user name');
+      }
+    }
+  };
+
+  const handleEditPasswordSave = async () => {
+    if (!newPassword) {
+      Alert.alert('Error', 'Please fill all the fields');
+      return;
+    }
+    try { 
+      const response = await editUserPasswordRequest(user._id, newPassword);
+      Alert.alert('Success', 'User password updated successfully');
+      setEditPasswordMode(false);
+      setNewPassword('');
+      setUser(response);
+    } 
+    catch (error) {
+      if (axios.isAxiosError(error) && error.response) {
+          if (error.response.status === 400) {
+              Alert.alert('Error', `Missing password`);
+          }
+          else if (error.response.status === 401) {
+            Alert.alert('Error', `Invalid password`);
+        }
+          else {
+              Alert.alert('Error', `Request failed with status code ${error.response.status}`);
+          }
+      } else {
+        Alert.alert('Error', 'An error occurred during edit user password');
+      }
     }
   };
 
   const handleEditDetailsCancel = () => {
-    navigation.navigate('Profile');
+    setEditNameMode(false);
+    setEditPasswordMode(false);
+    // setEditDetailsMode(false);
+    // navigation.navigate('Profile');
   };
 
   const renderItem = ({ item }: { item: Post }) => (
@@ -76,16 +144,16 @@ const Profile = ({ user, navigation }: Props) => {
       <Text style={styles.subject}>{item.title}</Text>
       <Text style={styles.user}>{item.owner}</Text>
       {!item.isEditMode && <Text style={styles.content}>{item.content}</Text>}
-      {item.owner == user.email && !item.isEditMode && <Pressable style={styles.button} onPress={() => setPostEditMode(item)}>
+      {item.owner == user.email && !item.isEditMode && <Pressable style={styles.button1} onPress={() => setPostEditMode(item)}>
         <Text style={styles.text}>Edit</Text>
       </Pressable>}
-      {item.owner == user.email && !item.isEditMode && <Pressable style={styles.button} onPress={() => handleDeletePost(item)}>
+      {item.owner == user.email && !item.isEditMode && <Pressable style={styles.button1} onPress={() => handleDeletePost(item)}>
         <Text style={styles.text}>Delete</Text>
       </Pressable>}
-      {item.isEditMode && <Pressable style={styles.button} onPress={() => handleSaveEdit(item)}>
+      {item.isEditMode && <Pressable style={styles.button1} onPress={() => handleSaveEdit(item)}>
         <Text style={styles.text}>Save</Text>
       </Pressable>}
-      {item.isEditMode && <Pressable style={styles.button} onPress={() => handleCancelEdit(item)}>
+      {item.isEditMode && <Pressable style={styles.button1} onPress={() => handleCancelEdit(item)}>
         <Text style={styles.text}>Cancel</Text>
       </Pressable>}
 
@@ -181,19 +249,37 @@ const Profile = ({ user, navigation }: Props) => {
         {props => 
           <View style={styles.container2}>
             <Image style={styles.avatar} source={require('../assets/avatar.jpeg')} />
-            <Text style={styles.label}>Name: {name}</Text>
-            <Text style={styles.label}>Email: {email}</Text>
+            {!isEditNameMode && !isEditPasswordMode && <Text style={styles.label}>Name: {name}</Text>}
+            {!isEditNameMode && !isEditPasswordMode && <Text style={styles.label}>Email: {email}</Text>}
             {/* <Text style={styles.label}>Password: {password}</Text> */}
             {/* <Button title="Edit" onPress={() => setEditMode=(true)} /> */}
 
-            
-            {isEditMode && <View>
+            {!isEditNameMode && !isEditPasswordMode && <Pressable style={styles.button2} onPress={() => setEditNameMode(true)}>
+              <Text style={styles.text2}>Edit Name</Text>
+            </Pressable>}
+            {!isEditNameMode && !isEditPasswordMode && <Pressable style={styles.button2} onPress={() => setEditPasswordMode(true)}>
+              <Text style={styles.text2}>Edit Password</Text>
+            </Pressable>}
+            {isEditNameMode && <View>
               <Text style={styles.label}>New Name</Text>
-              <TextInput style={styles.input} value={name} onChangeText={setName} />
+              <TextInput style={styles.input} value={newName} onChangeText={setNewName} />
+              <Pressable style={styles.button2} onPress={handleEditNameSave}>
+              <Text style={styles.text2}>Save</Text>
+              </Pressable>
+              <Pressable style={styles.button2} onPress={handleEditDetailsCancel}>
+                <Text style={styles.text2}>Cancel</Text>
+              </Pressable>
+            </View>
+            }
+             {isEditPasswordMode && <View>
               <Text style={styles.label}>New Password</Text>
-              <TextInput style={styles.input} value={password} onChangeText={setPassword} secureTextEntry />
-              <Button title="Save" onPress={handleEditDetailsSave} />
-              <Button title="Cancel" onPress={handleEditDetailsCancel} />
+              <TextInput style={styles.input} value={newPassword} onChangeText={setNewPassword} secureTextEntry />
+              <Pressable style={styles.button2} onPress={handleEditPasswordSave}>
+              <Text style={styles.text2}>Save</Text>
+              </Pressable>
+              <Pressable style={styles.button2} onPress={handleEditDetailsCancel}>
+                <Text style={styles.text2}>Cancel</Text>
+              </Pressable>
             </View>
             }
           </View>
@@ -252,6 +338,8 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     marginBottom: 10,
     paddingHorizontal: 10,
+    color: 'white',
+    fontWeight: 'bold'
   },
   list: {
     paddingBottom: 20,
@@ -296,7 +384,19 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: 'red',
   },
-  button: {
+  button1: {
+    // alignItems: 'center',
+    // justifyContent: 'center',
+    // // paddingVertical: 12,
+    // // paddingHorizontal: 32,
+    // borderRadius: 20,
+    // elevation: 3,
+    // backgroundColor: '#ff7d03',
+    // marginTop: 20,
+    // marginHorizontal: 50,
+    // height: 30,
+    // // width: 130,
+
     alignItems: 'center',
     justifyContent: 'center',
     // paddingVertical: 12,
@@ -310,7 +410,27 @@ const styles = StyleSheet.create({
     width: 55,
   },
   text: {
-    fontSize: 14,
+    fontSize: 15,
+    lineHeight: 21,
+    fontWeight: 'bold',
+    letterSpacing: 0.25,
+    color: 'white',
+  },
+  button2: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    // paddingVertical: 12,
+    // paddingHorizontal: 32,
+    borderRadius: 20,
+    elevation: 3,
+    backgroundColor: '#ff7d03',
+    marginVertical: 5,
+    marginHorizontal: 50,
+    height: 40,
+    // width: 200,
+  },
+  text2: {
+    fontSize: 16,
     lineHeight: 21,
     fontWeight: 'bold',
     letterSpacing: 0.25,

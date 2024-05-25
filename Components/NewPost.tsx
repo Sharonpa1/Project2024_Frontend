@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, TextInput, Alert, StyleSheet, Pressable } from 'react-native';
 import RNPickerSelect from 'react-native-picker-select';
 import { newPostRequest } from '../ServerCalls';
@@ -7,6 +7,7 @@ import axios from 'axios';
 const NewPost = ({ user, navigation }: any) => {
   const [subject, setSubject] = useState('');
   const [content, setContent] = useState('');
+
 
   const handleSave = async () => {
     if (!subject || !content) {
@@ -18,8 +19,8 @@ const NewPost = ({ user, navigation }: any) => {
     try {
         const response = await newPostRequest(user, subject, content);
         Alert.alert('Success', 'Post saved successfully');
-        // navigation.navigate('Home', { user: user });
-        navigation.goBack();
+        navigation.navigate('Home', { user: user });
+        // navigation.goBack();
       } 
       catch (error) {
         if (axios.isAxiosError(error) && error.response) {

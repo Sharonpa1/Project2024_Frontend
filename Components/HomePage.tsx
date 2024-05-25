@@ -1,5 +1,5 @@
 import { StackNavigationProp } from '@react-navigation/stack';
-import { RouteProp } from '@react-navigation/native';
+import { RouteProp, useFocusEffect } from '@react-navigation/native';
 import { RootStackParamList } from '../App';
 import Post from './Post';
 import React, { useState, useEffect } from 'react';
@@ -32,6 +32,7 @@ export default function Home({ navigation, route }: Props) {
   const [error, setError] = useState<string | null>(null);
   const [newSubject, setNewSubject] = useState('');
   const [newContent, setNewContent] = useState('');
+  const [refreshKey, setRefreshKey] = useState(0); // Add refresh key state
 
   const fetchPosts = async () => {
       try {
@@ -46,6 +47,12 @@ export default function Home({ navigation, route }: Props) {
       }
     };
 
+    useFocusEffect(
+      React.useCallback(() => {
+        fetchPosts();
+      }, [])
+    );
+    
     useEffect(() => {
       fetchPosts();
   }, []);

@@ -26,29 +26,29 @@ export default function Register({ navigation, setUserName, setUser }: Props) {
 
 
 
-  const requestPermission = async () =>{
-    const res = await ImagePicker.requestCameraPermissionsAsync();
-    if(!res.granted){
-      alert("You need to accept camera pemissions");
-    }
-  }
+  // const requestPermission = async () =>{
+  //   const res = await ImagePicker.requestCameraPermissionsAsync();
+  //   if(!res.granted){
+  //     alert("You need to accept camera pemissions");
+  //   }
+  // }
 
-  useEffect(() => {
-    requestPermission();
-  }, []);
+  // useEffect(() => {
+  //   requestPermission();
+  // }, []);
 
   
-const selectImage = async () => {
-  try {
-  const result = await ImagePicker.launchCameraAsync()
-  if (!result.canceled) {
-    console.log("uri:" + result);
-    // setImageURI(result.assets.);
-  } 
-} catch (error) {
-  console.log("error:" + error)
-  }
-}
+// const selectImage = async () => {
+//   try {
+//   const result = await ImagePicker.launchCameraAsync()
+//   if (!result.canceled) {
+//     console.log("uri:" + result);
+//     // setImageURI(result.assets.);
+//   } 
+// } catch (error) {
+//   console.log("error:" + error)
+//   }
+// }
 
   const validateEmail = (email: string) => {
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -68,23 +68,47 @@ const selectImage = async () => {
 
     try {
         setRegisterError(false);
+        console.log(`------- ${registerError}`);
         const response = await registerRequest(name, email, password);
-        // //const responseLogin = await loginRequest(response.email, response.password);
-        // // Alert.alert('Success', `Welcome, ${responseLogin.user.name}!`);
-        // // setUserName(responseLogin.user.name);
-        // // navigation.navigate('Home', { name: responseLogin.user.name });
-        // Alert.alert('Success', `Welcome, ${response.name}!`);
-        // setUserName(response.name);
-        // navigation.navigate('Home', { name: response.name });
+        try {
+          // if(!registerError){
+            // console.log(`222222 ${registerError}`);
+            const response = await loginRequest(email, password);
+            Alert.alert('Success', `Welcome, ${response.user.name}!`);
+            setUserName(response.user.name);
+            setUser(response.user);
+            navigation.navigate('Home', { user: response.user });
+          // }
+          
+        } 
+        catch (error) {
+          if (axios.isAxiosError(error) && error.response) {
+              if (error.response.status === 400) {
+                  Alert.alert('Error', `Missing email or password`);
+              }
+              else if (error.response.status === 401) {
+                  Alert.alert('Error', `invalid email or password`);
+              }
+              else {
+                  Alert.alert('Error', `Request failed with status code ${error.response.status}`);
+              }
+          } else {
+            Alert.alert('Error', 'An error occurred during login');
+          }
+          // console.error(error);
+        }
       } 
       catch (error) {
-        setRegisterError(true);
+        // setRegisterError(true);
+        // console.log(`00000 ${registerError}`);
         if (axios.isAxiosError(error) && error.response) {
             if (error.response.status === 400) {
                 Alert.alert('Error', `Missing email or password`);
             }
             else if (error.response.status === 401) {
                 Alert.alert('Error', `User with the same email is already exists`);
+                // console.log("User with the same email is already exists");
+                // console.log(`111111 ${registerError}`);
             }
             else {
                 Alert.alert('Error', `Request failed with status code ${error.response.status}`);
@@ -95,32 +119,33 @@ const selectImage = async () => {
         // console.error(error);
       }
 
-      try {
-        if(!registerError){
-          const response = await loginRequest(email, password);
-          Alert.alert('Success', `Welcome, ${response.user.name}!`);
-          setUserName(response.user.name);
-          setUser(response.user);
-          navigation.navigate('Home', { user: response.user });
-        }
+      // try {
+      //   if(!registerError){
+      //     console.log(`222222 ${registerError}`);
+      //     const response = await loginRequest(email, password);
+      //     Alert.alert('Success', `Welcome, ${response.user.name}!`);
+      //     setUserName(response.user.name);
+      //     setUser(response.user);
+      //     navigation.navigate('Home', { user: response.user });
+      //   }
         
-      } 
-      catch (error) {
-        if (axios.isAxiosError(error) && error.response) {
-            if (error.response.status === 400) {
-                Alert.alert('Error', `Missing email or password`);
-            }
-            else if (error.response.status === 401) {
-                Alert.alert('Error', `invalid email or password`);
-            }
-            else {
-                Alert.alert('Error', `Request failed with status code ${error.response.status}`);
-            }
-        } else {
-          Alert.alert('Error', 'An error occurred during login');
-        }
-        // console.error(error);
-      }
+      // } 
+      // catch (error) {
+      //   if (axios.isAxiosError(error) && error.response) {
+      //       if (error.response.status === 400) {
+      //           Alert.alert('Error', `Missing email or password`);
+      //       }
+      //       else if (error.response.status === 401) {
+      //           Alert.alert('Error', `invalid email or password`);
+      //       }
+      //       else {
+      //           Alert.alert('Error', `Request failed with status code ${error.response.status}`);
+      //       }
+      //   } else {
+      //     Alert.alert('Error', 'An error occurred during login');
+      //   }
+      //   // console.error(error);
+      // }
   };
 
   const handleCancel = () => {
